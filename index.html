@@ -19,7 +19,7 @@
         }
         input {
             padding: 10px;
-            width: 200px;
+            width: 300px;
             margin: 10px;
             font-size: 16px;
         }
@@ -41,6 +41,7 @@
     <div class="container">
         <h1>Discord PFP Viewer</h1>
         <input type="text" id="discordId" placeholder="Enter Discord User ID">
+        <input type="text" id="avatarHash" placeholder="Enter Avatar Hash (Optional)">
         <button onclick="getPfp()">Get PFP</button>
         <div id="pfpContainer">
             <!-- Profile picture will be displayed here -->
@@ -50,21 +51,24 @@
     <script>
         function getPfp() {
             const userId = document.getElementById('discordId').value.trim();
+            const avatarHash = document.getElementById('avatarHash').value.trim();
+
             if (!userId) {
                 alert('Please enter a Discord User ID');
                 return;
             }
 
-            // Construct the URL for the PFP
-            const pfpUrl = `https://cdn.discordapp.com/avatars/${userId}/${userId}.png?size=1024`;
+            let avatarUrl;
+            if (avatarHash) {
+                avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=1024`;
+            } else {
+                // Default avatar for users without custom avatars
+                avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/default.png`;
+            }
 
-            // Create an image element and display it
             const img = document.createElement('img');
-            img.src = pfpUrl;
+            img.src = avatarUrl;
             img.alt = "Discord User PFP";
-            img.onerror = function() {
-                alert('User ID not found or invalid');
-            };
 
             // Clear previous PFP and append the new one
             const pfpContainer = document.getElementById('pfpContainer');
