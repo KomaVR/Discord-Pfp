@@ -1,48 +1,40 @@
-const fetch = require('node-fetch');
+const express = require('express');
+const axios = require('axios');
+const app = express();
+const port = 3000;
 
-// Use your provided Pastebin raw link for the bot token
-const PASTEBIN_URL = 'https://pastebin.com/raw/6T4qLBPX';
+// Middleware to serve static files (HTML, JS)
+app.use(express.static('public'));
 
-module.exports = async (req, res) => {
-    const { userId } = req.query;
+// Endpoint to get user data
+app.get('/getProfilePic', async (req, res) => {
+    const { botToken, userID } = req.query;
 
-    if (!userId) {
-        return res.status(400).json({ error: 'User ID is required' });
+    if (!botToken || !userID) {
+        return res.status(400).send('Bot token and user ID are required');
     }
 
     try {
-        // Fetch the bot token from Pastebin
-        const tokenResponse = await fetch(PASTEBIN_URL);
-        if (!tokenResponse.ok) {
-            return res.status(500).json({ error: 'Failed to retrieve bot token' });
-        }
-        const botToken = await tokenResponse.text();
-
-        // Use the bot token to make the Discord API call
-        const response = await fetch(`https://discord.com/api/v10/users/${userId}`, {
+        // Fetch user data from Discord API
+        const response = await axios.get(`https://discord.com/api/v10/users/${userID}`, {
             headers: {
-                'Authorization': `Bot ${botToken.trim()}`,
+                Authorization: `Bot ${botToken}`,
             },
         });
 
-        if (!response.ok) {
-            // Log the response text to understand what went wrong
-            const errorText = await response.text();
-            console.error('Discord API Error:', errorText);
-            return res.status(response.status).json({ error: 'User not found or API error', details: errorText });
-        }
-
-        const userData = await response.json();
-        const avatarHash = userData.avatar;
-
+        const avatarHash = response.data.avatar;
         if (avatarHash) {
-            const avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=1024`;
-            return res.json({ avatarUrl });
+            const profilePicUrl = `https://cdn.discordapp.com/avatars/${userID}/${avatarHash}.png`;
+            res.json({ profilePicUrl });
         } else {
-            return res.status(404).json({ error: 'No avatar found' });
+            res.status(404).send('No avatar found for this user');
         }
     } catch (error) {
-        console.error('Error fetching user data:', error);
-        return res.status(500).json({ error: 'Error fetching user data', details: error.message });
+        res.status(500).send('Error fetching data: ' + error.message);
     }
-};
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
