@@ -19,7 +19,7 @@
         }
         input {
             padding: 10px;
-            width: 300px;
+            width: 200px;
             margin: 10px;
             font-size: 16px;
         }
@@ -41,7 +41,6 @@
     <div class="container">
         <h1>Discord PFP Viewer</h1>
         <input type="text" id="discordId" placeholder="Enter Discord User ID">
-        <input type="text" id="avatarHash" placeholder="Enter Avatar Hash (Optional)">
         <button onclick="getPfp()">Get PFP</button>
         <div id="pfpContainer">
             <!-- Profile picture will be displayed here -->
@@ -49,31 +48,33 @@
     </div>
 
     <script>
-        function getPfp() {
+        async function getPfp() {
             const userId = document.getElementById('discordId').value.trim();
-            const avatarHash = document.getElementById('avatarHash').value.trim();
-
             if (!userId) {
                 alert('Please enter a Discord User ID');
                 return;
             }
 
-            let avatarUrl;
-            if (avatarHash) {
-                avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=1024`;
-            } else {
-                // Default avatar for users without custom avatars
-                avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/default.png`;
+            try {
+                // Call the backend API to get the avatar URL
+                const response = await fetch(`http://localhost:3000/get-avatar/${userId}`);
+                const data = await response.json();
+
+                if (data.avatarUrl) {
+                    const img = document.createElement('img');
+                    img.src = data.avatarUrl;
+                    img.alt = "Discord User PFP";
+
+                    // Clear previous PFP and append the new one
+                    const pfpContainer = document.getElementById('pfpContainer');
+                    pfpContainer.innerHTML = ''; // Clear previous image
+                    pfpContainer.appendChild(img);
+                } else {
+                    alert('Avatar not found or user does not have an avatar');
+                }
+            } catch (error) {
+                alert('Error fetching avatar: ' + error.message);
             }
-
-            const img = document.createElement('img');
-            img.src = avatarUrl;
-            img.alt = "Discord User PFP";
-
-            // Clear previous PFP and append the new one
-            const pfpContainer = document.getElementById('pfpContainer');
-            pfpContainer.innerHTML = ''; // Clear previous image
-            pfpContainer.appendChild(img);
         }
     </script>
 
