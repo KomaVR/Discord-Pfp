@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-// URL of the raw Pastebin containing the Discord bot token
+// Use your provided Pastebin raw link for the bot token
 const PASTEBIN_URL = 'https://pastebin.com/raw/6T4qLBPX';
 
 module.exports = async (req, res) => {
@@ -26,7 +26,10 @@ module.exports = async (req, res) => {
         });
 
         if (!response.ok) {
-            return res.status(404).json({ error: 'User not found' });
+            // Log the response text to understand what went wrong
+            const errorText = await response.text();
+            console.error('Discord API Error:', errorText);
+            return res.status(response.status).json({ error: 'User not found or API error', details: errorText });
         }
 
         const userData = await response.json();
@@ -39,6 +42,7 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'No avatar found' });
         }
     } catch (error) {
-        return res.status(500).json({ error: 'Error fetching user data' });
+        console.error('Error fetching user data:', error);
+        return res.status(500).json({ error: 'Error fetching user data', details: error.message });
     }
 };
