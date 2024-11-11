@@ -1,10 +1,11 @@
 const express = require('express');
 const axios = require('axios');
+const path = require('path'); // Required for serving static files
 const app = express();
 const port = 3000;
 
-// Middleware to serve static files (HTML, JS)
-app.use(express.static('public'));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint to get user data
 app.get('/getProfilePic', async (req, res) => {
