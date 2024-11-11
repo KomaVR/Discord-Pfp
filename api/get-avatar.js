@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
-// Discord Bot token (you need to create a bot and get this token from the Discord Developer Portal)
-const BOT_TOKEN = 'MTMwNTQwMTU1NDQ4ODEzNTY5MQ.G3ijq7.qwRNdLI6el4H4xCm5K8Ztx-nINhQj53CeVw_88';
+// URL of the raw Pastebin containing the Discord bot token
+const PASTEBIN_URL = 'https://pastebin.com/raw/6T4qLBPX';
 
 module.exports = async (req, res) => {
     const { userId } = req.query;
@@ -11,9 +11,17 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Fetch the bot token from Pastebin
+        const tokenResponse = await fetch(PASTEBIN_URL);
+        if (!tokenResponse.ok) {
+            return res.status(500).json({ error: 'Failed to retrieve bot token' });
+        }
+        const botToken = await tokenResponse.text();
+
+        // Use the bot token to make the Discord API call
         const response = await fetch(`https://discord.com/api/v10/users/${userId}`, {
             headers: {
-                'Authorization': `Bot ${BOT_TOKEN}`,
+                'Authorization': `Bot ${botToken.trim()}`,
             },
         });
 
