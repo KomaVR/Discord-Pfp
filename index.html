@@ -57,7 +57,7 @@
 
             try {
                 // Call the backend API to get the avatar URL
-                const response = await fetch(`http://localhost:3000/get-avatar/${userId}`);
+                const response = await fetch(`/api/get-avatar?userId=${userId}`);
                 const data = await response.json();
 
                 if (data.avatarUrl) {
