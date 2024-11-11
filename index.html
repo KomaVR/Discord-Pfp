@@ -3,80 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord PFP Viewer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-        }
-        input {
-            padding: 10px;
-            width: 200px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        img {
-            margin-top: 20px;
-            border-radius: 50%;
-            max-width: 150px;
-            max-height: 150px;
-        }
-    </style>
+    <title>Discord Profile Picture</title>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Discord PFP Viewer</h1>
-        <input type="text" id="discordId" placeholder="Enter Discord User ID">
-        <button onclick="getPfp()">Get PFP</button>
-        <div id="pfpContainer">
-            <!-- Profile picture will be displayed here -->
-        </div>
+    <h2>Discord User Profile Picture</h2>
+    <label for="userID">Enter Discord User ID:</label>
+    <input type="text" id="userID" placeholder="Enter User ID" />
+    <button onclick="showProfilePic()">Show Profile Picture</button>
+    <br><br>
+    <div id="profilePicContainer">
+        <!-- Profile Picture will be shown here -->
     </div>
 
     <script>
-        async function getPfp() {
-            const userId = document.getElementById('discordId').value.trim();
-            if (!userId) {
-                alert('Please enter a Discord User ID');
-                return;
-            }
-
-            try {
-                // Call the backend API to get the avatar URL
-                const response = await fetch(`/api/get-avatar?userId=${userId}`);
-                const data = await response.json();
-
-                if (data.avatarUrl) {
-                    const img = document.createElement('img');
-                    img.src = data.avatarUrl;
-                    img.alt = "Discord User PFP";
-
-                    // Clear previous PFP and append the new one
-                    const pfpContainer = document.getElementById('pfpContainer');
-                    pfpContainer.innerHTML = ''; // Clear previous image
-                    pfpContainer.appendChild(img);
-                } else {
-                    alert('Avatar not found or user does not have an avatar');
-                }
-            } catch (error) {
-                alert('Error fetching avatar: ' + error.message);
+        function showProfilePic() {
+            const userID = document.getElementById('userID').value;
+            if (userID) {
+                const profilePicUrl = `https://cdn.discordapp.com/avatars/${userID}/${userID}.png`;
+                document.getElementById('profilePicContainer').innerHTML = `<img src="${profilePicUrl}" alt="Profile Picture" />`;
+            } else {
+                alert('Please enter a valid Discord User ID.');
             }
         }
     </script>
-
 </body>
 </html>
