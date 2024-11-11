@@ -9,6 +9,10 @@
     <h2>Discord User Profile Picture</h2>
     <label for="userID">Enter Discord User ID:</label>
     <input type="text" id="userID" placeholder="Enter User ID" />
+    <br><br>
+    <label for="avatarHash">Enter Avatar Hash:</label>
+    <input type="text" id="avatarHash" placeholder="Enter Avatar Hash" />
+    <br><br>
     <button onclick="showProfilePic()">Show Profile Picture</button>
     <br><br>
     <div id="profilePicContainer">
@@ -18,11 +22,12 @@
     <script>
         function showProfilePic() {
             const userID = document.getElementById('userID').value;
-            if (userID) {
-                const profilePicUrl = `https://cdn.discordapp.com/avatars/${userID}/${userID}.png`;
+            const avatarHash = document.getElementById('avatarHash').value;
+            if (userID && avatarHash) {
+                const profilePicUrl = `https://cdn.discordapp.com/avatars/${userID}/${avatarHash}.png`;
                 document.getElementById('profilePicContainer').innerHTML = `<img src="${profilePicUrl}" alt="Profile Picture" />`;
             } else {
-                alert('Please enter a valid Discord User ID.');
+                alert('Please enter both User ID and Avatar Hash.');
             }
         }
     </script>
